@@ -1,15 +1,16 @@
+use crate::guc::ffi::CString;
 use anyhow::Result;
-use core::ffi::CStr;
 use pgrx::*;
 
-pub static PGLATER_SOCKET_URL: GucSetting<Option<&CStr>> = GucSetting::<Option<&CStr>>::new(None);
+pub static PGLATER_SOCKET_URL: GucSetting<Option<CString>> =
+    GucSetting::<Option<CString>>::new(None);
 
 // initialize GUCs
 pub fn init_guc() {
     GucRegistry::define_string_guc(
-        "pglater.host",
-        "unix socket url for Postgres",
-        "unix socket path to the Postgres instance. Optional. Can also be set in environment variable PGLATER_SOCKET_URL.",
+        c"pglater.host",
+        c"unix socket url for Postgres",
+        c"unix socket path to the Postgres instance. Optional. Can also be set in environment variable PGLATER_SOCKET_URL.",
         &PGLATER_SOCKET_URL,
         GucContext::Suset, GucFlags::default());
 }
@@ -38,7 +39,7 @@ pub fn get_guc(guc: PglaterGUC) -> Option<String> {
 }
 
 #[allow(dead_code)]
-fn handle_cstr(cstr: &CStr) -> Result<String> {
+fn handle_cstr(cstr: CString) -> Result<String> {
     if let Ok(s) = cstr.to_str() {
         Ok(s.to_owned())
     } else {

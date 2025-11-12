@@ -3,7 +3,6 @@
 /// "RELEASE", "GRANT", "REVOKE", "SET", "RESET", "SHOW", "LISTEN", "NOTIFY",
 /// "VACUUM", "ANALYZE", "EXPLAIN", "CLUSTER", "CHECKPOINT", "REINDEX",
 /// "PG_TRY_ADVISORY", "PREPARE", "EXECUTE", "DEALLOCATE", "$BODY$"]
-
 /// naive classifier of SQL statements
 ///
 ///
