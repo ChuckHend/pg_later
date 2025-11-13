@@ -10,7 +10,7 @@ jobs:
     container: pgxn/pgxn-tools
     steps:
     - name: Check out the repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     - name: Bundle the Release
       env: { GIT_BUNDLE_OPTS: --add-file META.json }
       run: make META.json && pgxn-bundle
