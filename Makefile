@@ -27,7 +27,7 @@ clean:
 	@rm -rf META.json $(DISTNAME)-$(DISTVERSION).zip
 
 install-pgmq:
-	git clone https://github.com/tembo-io/pgmq.git && \
+	git clone https://github.com/pgmq/pgmq.git && \
 	cd pgmq/pgmq-extension && \
 	PG_CONFIG=${PGRX_PG_CONFIG} make clean && \
 	PG_CONFIG=${PGRX_PG_CONFIG} make && \

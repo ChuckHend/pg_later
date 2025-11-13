@@ -1,10 +1,10 @@
 {
    "name": "pg_later",
    "abstract": "Run queries now and get results later",
-   "description": "A postgres extension to execute queries asynchronously built on pgmq",
+   "description": "A postgres extension to execute queries asynchronously. Built on pgmq.",
    "version": "@CARGO_VERSION@",
    "maintainer": [
-      "Tembo <admin+pgxn@tembo.io>"
+      "Adam <admin+pgxn@email.com>"
    ],
    "license": "postgresql",
    "provides": {
@@ -25,11 +25,11 @@
    },
    "resources": {
       "bugtracker": {
-         "web": "https://github.com/tembo-io/pg_later/issues/"
+         "web": "https://github.com/chuckhend/pg_later/issues/"
       },
       "repository": {
-         "url": "git://github.com/tembo-io/pg_later.git",
-         "web": "https://github.com/tembo-io/pg_later/",
+         "url": "git://github.com/chuckhend/pg_later.git",
+         "web": "https://github.com/chuckhend/pg_later/",
          "type": "git"
       }
    },

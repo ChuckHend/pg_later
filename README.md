@@ -2,11 +2,9 @@
 
 Execute SQL now and get the results later.
 
-A postgres extension to execute queries asynchronously. Built on [pgmq](https://github.com/tembo-io/pgmq).
+A postgres extension to execute queries asynchronously. Built on [pgmq](https://github.com/pgmq/pgmq).
 
-[![Tembo Cloud Try Free](https://tembo.io/tryFreeButton.svg)](https://cloud.tembo.io/sign-up)
-
-[![Static Badge](https://img.shields.io/badge/%40tembo-community?logo=slack&label=slack)](https://join.slack.com/t/tembocommunity/shared_invite/zt-20dtnhcmo-pLNV7_Aobi50TdTLpfQ~EQ)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13%20%7C%2014%20%7C%2015%20%7C%2016%20%7C%2017%20%7C%2018-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![PGXN version](https://badge.fury.io/pg/pg_later.svg)](https://pgxn.org/dist/pg_later/)
 
 ## Installation
@@ -14,10 +12,10 @@ A postgres extension to execute queries asynchronously. Built on [pgmq](https://
 ### Run with docker
 
 ```bash
-docker run -p 5432:5432 -e POSTGRES_PASSWORD=postgres quay.io/tembo/pglater-pg:latest
+docker run -p 5432:5432 -e POSTGRES_PASSWORD=postgres ghcr.io/chuckhend/pglater-pg:latest
 ```
 
-If you'd like to build from source, you can follow the instructions in [CONTRIBUTING.md](https://github.com/tembo-io/pg_later/blob/main/CONTRIBUTING.md).
+If you'd like to build from source, you can follow the instructions in [CONTRIBUTING.md](https://github.com/chuckhend/pg_later/blob/main/CONTRIBUTING.md).
 
 ### Using the extension
 
