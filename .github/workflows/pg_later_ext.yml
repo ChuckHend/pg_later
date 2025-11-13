@@ -43,7 +43,7 @@ jobs:
         with:
           working-directory: ./
       - name: Cargo format
-        run: cargo +nightly fmt --all --check
+        run: cargo fmt --all --check
       - name: Clippy
         run: cargo clippy
 
