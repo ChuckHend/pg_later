@@ -22,48 +22,13 @@ on:
       - created
 
 jobs:
-  dependencies:
-    name: Install dependencies
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v2
-
-      # rust needed to install trunk
-      - name: Install Rust stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          cache-directories: /home/runner/.pgrx
-
-      - name: Install stoml and pg-trunk
-        shell: bash
-        run: |
-          set -xe
-          wget https://github.com/freshautomations/stoml/releases/download/v0.7.1/stoml_linux_amd64 &> /dev/null
-          mv stoml_linux_amd64 stoml
-          chmod +x stoml
-          sudo mv stoml /usr/local/bin/
-          cargo install pg-trunk
-      - name: Cache binaries
-        uses: actions/cache@v2
-        with:
-          path: |
-            /usr/local/bin/stoml
-            ~/.cargo/bin/trunk
-          key: ${{ runner.os }}-bins-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-bins-
   lint:
     name: Run linters
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Install Rust minimal nightly with clippy and rustfmt
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          components: rustfmt, clippy
+        uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
           prefix-key: "pg_later-extension-lint"
@@ -82,14 +47,11 @@ jobs:
 
   test:
     name: Run tests
-    needs: dependencies
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Install Rust stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+        uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
           prefix-key: "pg_later-extension-test"
@@ -101,15 +63,6 @@ jobs:
       - uses: ./.github/actions/pgx-init
         with:
           working-directory: ./
-      - name: Restore cached binaries
-        uses: actions/cache@v2
-        with:
-          path: |
-            /usr/local/bin/stoml
-            ~/.cargo/bin/trunk
-          key: ${{ runner.os }}-bins-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-bins-
       - name: test
         run: |
           make setup
@@ -126,86 +79,3 @@ jobs:
           tail -10 ~/.pgrx/data-18/postgresql.conf
           echo "==== .pgrx dir ======"
           ls -alh ~/.pgrx
-
-  publish:
-    if: github.event_name == 'release'
-    name: trunk publish
-    needs: dependencies
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        pg-version: [14, 15, 16, 17, 18]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: "pg_later-extension-test"
-          workspaces: |
-            pg_later/extension
-          # Additional directories to cache
-          cache-directories: |
-            /home/runner/.pgrx
-      - name: Restore cached binaries
-        uses: actions/cache@v2
-        with:
-          path: |
-            /usr/local/bin/stoml
-            ~/.cargo/bin/trunk
-          key: ${{ runner.os }}-bins-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-bins-
-      - name: trunk build
-        working-directory: ./
-        run: |
-          cargo install pg-trunk --force
-          ~/.cargo/bin/trunk --version
-          ~/.cargo/bin/trunk build --pg-version ${{ matrix.pg-version }}
-      - name: trunk publish
-        working-directory: ./
-        env:
-          TRUNK_API_TOKEN: ${{ secrets.TRUNK_AUTH_TOKEN }}
-        run: ~/.cargo/bin/trunk publish
-  build_and_push:
-    if: github.event_name == 'release'
-    name: Build and push images
-    needs:
-      - dependencies
-    runs-on: ubuntu-22.04
-    outputs:
-      short_sha: ${{ steps.versions.outputs.SHORT_SHA }}
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-      - name: Install stoml and pg-trunk
-        shell: bash
-        run: |
-          set -xe
-          wget https://github.com/freshautomations/stoml/releases/download/v0.7.1/stoml_linux_amd64 &> /dev/null
-          mv stoml_linux_amd64 stoml
-          chmod +x stoml
-          sudo mv stoml /usr/local/bin/
-      - name: Set version strings
-        id: versions
-        run: |
-          echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "TAG_VER=$(/usr/local/bin/stoml Trunk.toml extension.version)" >> $GITHUB_OUTPUT
-          echo "PGRX_VER=$(/usr/local/bin/stoml Cargo.toml dependencies.pgrx)" >> $GITHUB_OUTPUT
-      - name: Build and upload image
-        run: |
-          docker build --build-arg="PGRX_VER=${{ steps.versions.outputs.PGRX_VER }}" -t pglater-pg -f images/pglater-pg/Dockerfile .
-          docker tag pglater-pg quay.io/tembo/pglater-pg:v${{ steps.versions.outputs.TAG_VER }}
-          docker tag pglater-pg quay.io/tembo/pglater-pg:latest
-      - name: Login to Quay
-        uses: docker/login-action@v2
-        with:
-          registry: quay.io/tembo
-          username: ${{ secrets.QUAY_USER_TEMBO }}
-          password: ${{ secrets.QUAY_PASSWORD_TEMBO }}
-      - name: Push image
-        run: |
-          docker push quay.io/tembo/pglater-pg:v${{ steps.versions.outputs.TAG_VER }}
-          docker push quay.io/tembo/pglater-pg:latest
