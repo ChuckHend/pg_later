@@ -12,8 +12,8 @@ fn init() -> Result<bool, spi::Error> {
         "select pgmq.create_non_partitioned('pg_later_results')",
     ];
     for q in setup_queries {
-        let ran: Result<_, spi::Error> = Spi::connect(|mut c| {
-            let _ = c.update(q, None, None)?;
+        let ran: Result<_, spi::Error> = Spi::connect_mut(|c| {
+            let _ = c.update(q, None, &[])?;
             Ok(())
         });
 
@@ -53,8 +53,8 @@ fn fetch_results(job_id: i64) -> Result<Option<pgrx::JsonB>, spi::Error> {
         where message->>'job_id' = '{job_id}'
         "
     );
-    let results: Result<Option<pgrx::JsonB>, spi::Error> = Spi::connect(|mut client| {
-        let mut tup_table: SpiTupleTable = client.update(&query, None, None)?;
+    let results: Result<Option<pgrx::JsonB>, spi::Error> = Spi::connect_mut(|client| {
+        let mut tup_table: SpiTupleTable = client.update(&query, None, &[])?;
         if let Some(row) = tup_table.next() {
             let message = row["message"].value::<pgrx::JsonB>()?.expect("no message");
             return Ok(Some(message));
