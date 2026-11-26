@@ -196,29 +196,20 @@ jobs:
       - name: Create and push Docker manifest -- Commit
         if: github.event_name != 'release'
         run: |
-          docker manifest create ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }} \
+          docker buildx imagetools create \
+            -t ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }} \
             ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }}-arm64 \
             ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }}-amd64
-        
-          docker manifest annotate ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }} ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }}-arm64 --arch arm64 --os linux
-          docker manifest annotate ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }} ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }}-amd64 --arch amd64 --os linux
-          docker manifest push ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }}
 
       - name: Create and push Docker manifest -- Release
         if: github.event_name == 'release'
         run: |
-          docker manifest create ghcr.io/chuckhend/pglater-pg:latest \
+          docker buildx imagetools create \
+            -t ghcr.io/chuckhend/pglater-pg:latest \
             ghcr.io/chuckhend/pglater-pg:latest-arm64 \
             ghcr.io/chuckhend/pglater-pg:latest-amd64
-        
-          docker manifest annotate ghcr.io/chuckhend/pglater-pg:latest ghcr.io/chuckhend/pglater-pg:latest-arm64 --arch arm64 --os linux
-          docker manifest annotate ghcr.io/chuckhend/pglater-pg:latest ghcr.io/chuckhend/pglater-pg:latest-amd64 --arch amd64 --os linux
-          docker manifest push ghcr.io/chuckhend/pglater-pg:latest
 
-          docker manifest create ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }} \
+          docker buildx imagetools create \
+            -t ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }} \
             ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }}-arm64 \
             ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }}-amd64
-        
-          docker manifest annotate ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }} ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }}-arm64 --arch arm64 --os linux
-          docker manifest annotate ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }} ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }}-amd64 --arch amd64 --os linux
-          docker manifest push ghcr.io/chuckhend/pglater-pg:v${{ steps.versions.outputs.TAG_VER }}
