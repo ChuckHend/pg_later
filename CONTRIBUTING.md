@@ -100,7 +100,8 @@ CREATE EXTENSION pg_later cascade;
 
 # Releases and versioning
 
-`pg_later` Postgres Extension releases are automated through a [Github workflow](https://github.com/chuckhend/pg_later/blob/main/.github/workflows/pg_later_ext.yml).
-To create a release, create a new tag follow a valid [semver](https://semver.org/), then create a release with the same name.
+`pg_later` Postgres Extension releases are automated through Github workflows. Pushing a `vX.Y.Z` tag publishes the extension to [PGXN](https://github.com/chuckhend/pg_later/blob/main/.github/workflows/pgxn-release.yml) and pushes `vX.Y.Z` and `latest` images to [ghcr.io](https://github.com/chuckhend/pg_later/blob/main/.github/workflows/pg-image-build.yml).
+To create a release, bump the version in Cargo.toml and add a `sql/pg_later--<old>--<new>.sql` upgrade script (empty if there are no SQL changes).
+Once merged, create a new tag following a valid [semver](https://semver.org/), then create a release with the same name.
 This release must match the version found in Cargo.toml.
 Auto-generate the release notes and/or add more relevant details as needed.
