@@ -1,4 +1,4 @@
-DISTNAME = $(shell grep -m 1 '^name' Trunk.toml | sed -e 's/[^"]*"\([^"]*\)",\{0,1\}/\1/')
+DISTNAME = $(shell grep -m 1 '^name' Cargo.toml | sed -e 's/[^"]*"\([^"]*\)",\{0,1\}/\1/')
 DISTVERSION  = $(shell grep -m 1 '^version' Cargo.toml | sed -e 's/[^"]*"\([^"]*\)",\{0,1\}/\1/')
 PG_VERSION:=18
 PGRX_PG_CONFIG =$(shell cargo pgrx info pg-config pg${PG_VERSION})
@@ -15,7 +15,7 @@ format:
 run:
 	SQLX_OFFLINE=true PGLATER_SOCKET_URL=${PGLATER_SOCKET_URL} cargo pgrx run pg${PG_VERSION} postgres
 
-META.json: META.json.in Trunk.toml
+META.json: META.json.in Cargo.toml
 	@sed "s/@CARGO_VERSION@/$(DISTVERSION)/g" $< > $@
 
 $(DISTNAME)-$(DISTVERSION).zip: META.json

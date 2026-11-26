@@ -63,7 +63,7 @@ jobs:
 
       - name: Build and push -- Commit
         # push commit build when not a release
-        if: github.event_name != 'release'
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: |
             docker build \
                 --build-arg PGRX_VER=${{ steps.versions.outputs.PGRX_VER }} \
@@ -74,7 +74,7 @@ jobs:
             fi
 
       - name: Build and push -- Release
-        if: github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
             docker build \
                 --build-arg PGRX_VER=${{ steps.versions.outputs.PGRX_VER }} \
@@ -128,7 +128,7 @@ jobs:
 
       - name: Build and push -- Commit
         # push commit build when not a release
-        if: github.event_name != 'release'
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: |
             docker build \
                 --build-arg PGRX_VER=${{ steps.versions.outputs.PGRX_VER }} \
@@ -140,7 +140,7 @@ jobs:
             fi
 
       - name: Build and push -- Release
-        if: github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
             docker build \
                 --build-arg PGRX_VER=${{ steps.versions.outputs.PGRX_VER }} \
@@ -194,7 +194,7 @@ jobs:
           echo "TAG_VER=$(/usr/local/bin/stoml Cargo.toml package.version)" >> $GITHUB_OUTPUT
 
       - name: Create and push Docker manifest -- Commit
-        if: github.event_name != 'release'
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: |
           docker buildx imagetools create \
             -t ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }} \
@@ -202,7 +202,7 @@ jobs:
             ghcr.io/chuckhend/pglater-pg:${{ steps.versions.outputs.SHORT_SHA }}-amd64
 
       - name: Create and push Docker manifest -- Release
-        if: github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
           docker buildx imagetools create \
             -t ghcr.io/chuckhend/pglater-pg:latest \
