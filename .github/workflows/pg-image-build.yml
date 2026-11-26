@@ -33,22 +33,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Install stoml
-        shell: bash
-        run: |
-          set -xe
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/freshautomations/stoml/releases/download/v0.7.1/stoml_linux_amd64 &> /dev/null
-          mv stoml_linux_amd64 stoml
-          chmod +x stoml
-          sudo mv stoml /usr/local/bin/
       - name: Set version strings
         id: versions
         run: |
+          TAG_VER=$(grep -m 1 '^version' Cargo.toml | sed -e 's/[^"]*"\([^"]*\)"/\1/')
+          PGRX_VER=$(grep -m 1 '^pgrx = ' Cargo.toml | sed -e 's/[^"]*"=\{0,1\}\([^"]*\)"/\1/')
+          test -n "$TAG_VER" && test -n "$PGRX_VER"
           echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "TAG_VER=$(/usr/local/bin/stoml Cargo.toml package.version)" >> $GITHUB_OUTPUT
-          echo "PGRX_VER=$(/usr/local/bin/stoml Cargo.toml dependencies.pgrx | tr -d '="')" >> $GITHUB_OUTPUT
+          echo "TAG_VER=$TAG_VER" >> $GITHUB_OUTPUT
+          echo "PGRX_VER=$PGRX_VER" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -98,22 +91,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install stoml
-        shell: bash
-        run: |
-          set -xe
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/freshautomations/stoml/releases/download/v0.7.1/stoml_linux_armv7 &> /dev/null
-          mv stoml_linux_armv7 stoml
-          chmod +x stoml
-          sudo mv stoml /usr/local/bin/
       - name: Set version strings
         id: versions
         run: |
+          TAG_VER=$(grep -m 1 '^version' Cargo.toml | sed -e 's/[^"]*"\([^"]*\)"/\1/')
+          PGRX_VER=$(grep -m 1 '^pgrx = ' Cargo.toml | sed -e 's/[^"]*"=\{0,1\}\([^"]*\)"/\1/')
+          test -n "$TAG_VER" && test -n "$PGRX_VER"
           echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "TAG_VER=$(/usr/local/bin/stoml Cargo.toml package.version)" >> $GITHUB_OUTPUT
-          echo "PGRX_VER=$(/usr/local/bin/stoml Cargo.toml dependencies.pgrx | tr -d '="')" >> $GITHUB_OUTPUT
+          echo "TAG_VER=$TAG_VER" >> $GITHUB_OUTPUT
+          echo "PGRX_VER=$PGRX_VER" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -177,21 +163,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install stoml
-        shell: bash
-        run: |
-          set -xe
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/freshautomations/stoml/releases/download/v0.7.1/stoml_linux_amd64 &> /dev/null
-          mv stoml_linux_amd64 stoml
-          chmod +x stoml
-          sudo mv stoml /usr/local/bin/
       - name: Set version strings
         id: versions
         run: |
+          TAG_VER=$(grep -m 1 '^version' Cargo.toml | sed -e 's/[^"]*"\([^"]*\)"/\1/')
+          test -n "$TAG_VER"
           echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "TAG_VER=$(/usr/local/bin/stoml Cargo.toml package.version)" >> $GITHUB_OUTPUT
+          echo "TAG_VER=$TAG_VER" >> $GITHUB_OUTPUT
 
       - name: Create and push Docker manifest -- Commit
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
