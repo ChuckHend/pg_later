@@ -21,7 +21,7 @@ Once you have those pre-requisites, you need to setup `pgrx`.
 
 ```bash
 # Find the version of PGRX to install from in Cargo.toml
-cargo install --locked cargo-pgrx --version 0.16.1
+cargo install --locked cargo-pgrx --version 0.20.1
 ```
 
 Clone the repo and change into the directory.
